@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Seating Chart</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar">
+      <h2>Guests</h2>
+      <div id="import-section">
+        <textarea id="name-input" placeholder="Paste names from Google Sheets&#10;(First Name → Last Name columns)"></textarea>
+        <button id="import-btn">Import Names</button>
+      </div>
+      <div id="guest-count"></div>
+      <div id="guest-list"></div>
+      <div id="sidebar-actions">
+        <button id="export-btn">Copy to Clipboard</button>
+        <button id="clear-btn">Clear All</button>
+      </div>
+    </aside>
+    <main id="floor-plan">
+      <!-- Top row: 2 horizontal 10-seat tables -->
+      <div class="table horizontal" id="table-1" data-table="1" data-label="Table 1">
+        <div class="table-body"></div>
+        <div class="seats top-seats"></div>
+        <div class="seats bottom-seats"></div>
+        <div class="seats left-seat"></div>
+        <div class="seats right-seat"></div>
+      </div>
+      <div class="table horizontal" id="table-2" data-table="2" data-label="Table 2">
+        <div class="table-body"></div>
+        <div class="seats top-seats"></div>
+        <div class="seats bottom-seats"></div>
+        <div class="seats left-seat"></div>
+        <div class="seats right-seat"></div>
+      </div>
+
+      <!-- Bottom section: 4 vertical tables -->
+      <div class="table vertical" id="table-3" data-table="3" data-label="Table 3">
+        <div class="table-body"></div>
+        <div class="seats left-seats"></div>
+        <div class="seats right-seats"></div>
+      </div>
+      <div class="table vertical" id="table-4" data-table="4" data-label="Table 4">
+        <div class="table-body"></div>
+        <div class="seats left-seats"></div>
+        <div class="seats right-seats"></div>
+      </div>
+      <div class="table vertical" id="table-5" data-table="5" data-label="Table 5">
+        <div class="table-body"></div>
+        <div class="seats left-seats"></div>
+        <div class="seats right-seats"></div>
+      </div>
+      <div class="table vertical" id="table-6" data-table="6" data-label="Table 6">
+        <div class="table-body"></div>
+        <div class="seats left-seats"></div>
+        <div class="seats right-seats"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="dist/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "wedding-tables",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "serve": "npx serve ."
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "serve": "^14.2.0"
+  }
+}

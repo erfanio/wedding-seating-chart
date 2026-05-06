@@ -1,0 +1,352 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f5f5f0;
+  color: #333;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  height: 100vh;
+}
+
+/* ── Sidebar ── */
+
+#sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+#sidebar h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#import-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#name-input {
+  width: 100%;
+  height: 80px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+}
+
+#import-btn,
+#export-btn,
+#clear-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+#import-btn {
+  background: #4a7c59;
+  color: #fff;
+}
+
+#import-btn:hover {
+  background: #3d6a4b;
+}
+
+#guest-count {
+  font-size: 13px;
+  color: #666;
+}
+
+#guest-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.guest-item {
+  padding: 6px 10px;
+  background: #e8f0fe;
+  border: 1px solid #c4d9f2;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: grab;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.guest-item:active {
+  cursor: grabbing;
+}
+
+.guest-item.dragging {
+  opacity: 0.4;
+}
+
+#sidebar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+#export-btn {
+  flex: 1;
+  background: #2563eb;
+  color: #fff;
+}
+
+#export-btn:hover {
+  background: #1d4ed8;
+}
+
+#export-btn.copied {
+  background: #16a34a;
+}
+
+#clear-btn {
+  background: #e5e7eb;
+  color: #333;
+}
+
+#clear-btn:hover {
+  background: #d1d5db;
+}
+
+/* ── Floor Plan ── */
+
+#floor-plan {
+  flex: 1;
+  position: relative;
+  padding: 30px;
+  overflow: auto;
+}
+
+/* ── Tables (shared) ── */
+
+.table {
+  position: absolute;
+}
+
+.table-body {
+  background: #d4c5a9;
+  border: 2px solid #b8a88a;
+  border-radius: 6px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table::after {
+  content: attr(data-label);
+  position: absolute;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b7d6b;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── Seat ── */
+
+.seat {
+  width: 72px;
+  height: 32px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
+.seat.empty {
+  color: #aaa;
+}
+
+.seat.assigned {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+  color: #065f46;
+  font-weight: 500;
+}
+
+.seat.drag-over {
+  border-color: #2563eb;
+  background: #dbeafe;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+
+.seat.assigned:hover {
+  border-color: #f87171;
+  background: #fee2e2;
+}
+
+/* ── Horizontal tables (top row): 10 seats ── */
+/* Layout: 4 top, 1 right, 4 bottom, 1 left */
+
+.table.horizontal {
+  width: 340px;
+  height: 120px;
+}
+
+.table.horizontal .table-body {
+  top: 36px;
+  left: 40px;
+  right: 40px;
+  bottom: 36px;
+}
+
+.table.horizontal::after {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.table.horizontal .top-seats,
+.table.horizontal .bottom-seats {
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.table.horizontal .top-seats {
+  top: 0;
+}
+
+.table.horizontal .bottom-seats {
+  bottom: 0;
+}
+
+.table.horizontal .left-seat,
+.table.horizontal .right-seat {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.table.horizontal .left-seat {
+  left: -36px;
+}
+
+.table.horizontal .right-seat {
+  right: -36px;
+}
+
+.table.horizontal .left-seat .seat,
+.table.horizontal .right-seat .seat {
+  width: 32px;
+  height: 72px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* ── Vertical tables (bottom section): 14 or 16 seats ── */
+/* Layout: N seats on left side, N seats on right side */
+
+.table.vertical {
+  width: 140px;
+}
+
+.table.vertical .table-body {
+  top: 0;
+  left: 36px;
+  right: 36px;
+  bottom: 0;
+}
+
+.table.vertical::after {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.table.vertical .left-seats,
+.table.vertical .right-seats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: absolute;
+  top: 4px;
+}
+
+.table.vertical .left-seats {
+  left: -36px;
+}
+
+.table.vertical .right-seats {
+  right: -36px;
+}
+
+.table.vertical .left-seats .seat,
+.table.vertical .right-seats .seat {
+  width: 32px;
+  height: 36px;
+  font-size: 9px;
+  padding: 0 2px;
+}
+
+/* ── Table positioning ── */
+
+#table-1 {
+  top: 30px;
+  left: 40px;
+}
+
+#table-2 {
+  top: 30px;
+  left: 420px;
+}
+
+/* Vertical tables row */
+#table-3 {
+  top: 200px;
+  left: 30px;
+}
+
+#table-4 {
+  top: 200px;
+  left: 210px;
+}
+
+#table-5 {
+  top: 200px;
+  left: 410px;
+}
+
+#table-6 {
+  top: 200px;
+  left: 590px;
+}
