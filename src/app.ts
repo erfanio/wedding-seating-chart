@@ -250,20 +250,42 @@ function render(): void {
 
 // ── Import names ──
 
+function findTableByLabel(label: string): TableConfig | undefined {
+  return TABLES.find((t) => t.label.toLowerCase() === label.toLowerCase());
+}
+
+function detectExportFormat(lines: string[]): boolean {
+  // Check if first data row looks like "Table N\t<number>\t..."
+  const firstLine = lines[0].toLowerCase();
+  if (firstLine.includes("table") && firstLine.includes("seat")) return true;
+  // Check second line if first is a header
+  if (lines.length > 1) {
+    const parts = lines[1].split(/\t/);
+    if (parts.length >= 4 && findTableByLabel(parts[0]) && !isNaN(Number(parts[1]))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function importNames(): void {
   const textarea = document.getElementById("name-input") as HTMLTextAreaElement;
   const text = textarea.value.trim();
   if (!text) return;
 
-  const lines = text.split("\n");
+  const lines = text.split("\n").filter((l) => l.trim());
+  if (!lines.length) return;
+
+  const isExport = detectExportFormat(lines);
   let startIdx = 0;
 
   // Detect header row
   const firstLine = lines[0].toLowerCase();
-  if (
-    firstLine.includes("first") &&
-    firstLine.includes("last")
-  ) {
+  if (isExport) {
+    if (firstLine.includes("table") && firstLine.includes("seat")) {
+      startIdx = 1;
+    }
+  } else if (firstLine.includes("first") && firstLine.includes("last")) {
     startIdx = 1;
   }
 
@@ -271,30 +293,41 @@ function importNames(): void {
     const line = lines[i].trim();
     if (!line) continue;
 
-    // Split by tab (Google Sheets copy)
     const parts = line.split(/\t/);
-    if (parts.length >= 2) {
+
+    if (isExport && parts.length >= 4) {
+      // Export format: Table, Seat, First Name, Last Name, Allergy
+      const tableLabel = parts[0].trim();
+      const seatNumber = parseInt(parts[1].trim(), 10);
+      const firstName = parts[2].trim();
+      const lastName = parts[3].trim();
+      const allergy = (parts[4] || "").trim();
+
+      if (!firstName && !lastName) continue;
+
+      const guest: Guest = { id: generateId(), firstName, lastName, allergy };
+      state.guests.push(guest);
+
+      const table = findTableByLabel(tableLabel);
+      if (table && !isNaN(seatNumber)) {
+        // Remove any existing assignment for this seat
+        state.assignments = state.assignments.filter(
+          (a) => !(a.tableId === table.id && a.seatNumber === seatNumber)
+        );
+        state.assignments.push({ tableId: table.id, seatNumber, guestId: guest.id });
+      }
+    } else if (parts.length >= 2) {
+      // Simple format: First Name, Last Name, Allergy
       const firstName = parts[0].trim();
       const lastName = parts[1].trim();
       const allergy = (parts[2] || "").trim();
       if (firstName || lastName) {
-        state.guests.push({
-          id: generateId(),
-          firstName,
-          lastName,
-          allergy,
-        });
+        state.guests.push({ id: generateId(), firstName, lastName, allergy });
       }
     } else {
-      // Single column — treat as first name
       const firstName = parts[0].trim();
       if (firstName) {
-        state.guests.push({
-          id: generateId(),
-          firstName,
-          lastName: "",
-          allergy: "",
-        });
+        state.guests.push({ id: generateId(), firstName, lastName: "", allergy: "" });
       }
     }
   }
