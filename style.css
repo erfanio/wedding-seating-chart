@@ -87,6 +87,7 @@ body {
 }
 
 .guest-item {
+  flex: none;
   padding: 6px 10px;
   background: #e8f0fe;
   border: 1px solid #c4d9f2;
@@ -173,8 +174,8 @@ body {
 /* ── Seat ── */
 
 .seat {
-  width: 72px;
-  height: 32px;
+  width: 80px;
+  height: 34px;
   background: #fff;
   border: 2px solid #ccc;
   border-radius: 4px;
@@ -207,23 +208,34 @@ body {
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 
+.seat.assigned.has-allergy {
+  background: #fef3c7;
+  border-color: #fbbf24;
+  color: #92400e;
+}
+
 .seat.assigned:hover {
   border-color: #f87171;
   background: #fee2e2;
+}
+
+.guest-item.has-allergy {
+  background: #fef3c7;
+  border-color: #fbbf24;
 }
 
 /* ── Horizontal tables (top row): 10 seats ── */
 /* Layout: 4 top, 1 right, 4 bottom, 1 left */
 
 .table.horizontal {
-  width: 340px;
-  height: 120px;
+  width: 390px;
+  height: 110px;
 }
 
 .table.horizontal .table-body {
   top: 36px;
-  left: 40px;
-  right: 40px;
+  left: 38px;
+  right: 38px;
   bottom: 36px;
 }
 
@@ -258,17 +270,17 @@ body {
 }
 
 .table.horizontal .left-seat {
-  left: -36px;
+  left: 0;
 }
 
 .table.horizontal .right-seat {
-  right: -36px;
+  right: 0;
 }
 
 .table.horizontal .left-seat .seat,
 .table.horizontal .right-seat .seat {
-  width: 32px;
-  height: 72px;
+  width: 34px;
+  height: 80px;
   writing-mode: vertical-rl;
   text-orientation: mixed;
 }
@@ -277,13 +289,13 @@ body {
 /* Layout: N seats on left side, N seats on right side */
 
 .table.vertical {
-  width: 140px;
+  width: 228px;
 }
 
 .table.vertical .table-body {
   top: 0;
-  left: 36px;
-  right: 36px;
+  left: 82px;
+  right: 82px;
   bottom: 0;
 }
 
@@ -297,56 +309,56 @@ body {
 .table.vertical .right-seats {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   position: absolute;
   top: 4px;
 }
 
 .table.vertical .left-seats {
-  left: -36px;
+  left: 0;
 }
 
 .table.vertical .right-seats {
-  right: -36px;
+  right: 0;
 }
 
 .table.vertical .left-seats .seat,
 .table.vertical .right-seats .seat {
-  width: 32px;
-  height: 36px;
-  font-size: 9px;
-  padding: 0 2px;
+  width: 80px;
+  height: 34px;
+  font-size: 10px;
+  padding: 0 3px;
 }
 
 /* ── Table positioning ── */
 
 #table-1 {
   top: 30px;
-  left: 40px;
+  left: 60px;
 }
 
 #table-2 {
   top: 30px;
-  left: 420px;
+  left: 500px;
 }
 
 /* Vertical tables row */
 #table-3 {
   top: 200px;
-  left: 30px;
+  left: 10px;
 }
 
 #table-4 {
   top: 200px;
-  left: 210px;
+  left: 248px;
 }
 
 #table-5 {
   top: 200px;
-  left: 410px;
+  left: 486px;
 }
 
 #table-6 {
   top: 200px;
-  left: 590px;
+  left: 724px;
 }

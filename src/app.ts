@@ -4,6 +4,7 @@ interface Guest {
   id: string;
   firstName: string;
   lastName: string;
+  allergy: string;
 }
 
 interface SeatAssignment {
@@ -113,8 +114,10 @@ function createSeatElement(tableId: string, seatNumber: number): HTMLElement {
     const guest = getGuest(assignment.guestId);
     if (guest) {
       seat.className = "seat assigned";
+      if (guest.allergy) seat.classList.add("has-allergy");
       seat.textContent = `${guest.firstName} ${guest.lastName.charAt(0)}.`;
-      seat.title = `${guest.firstName} ${guest.lastName} — click to unassign`;
+      const allergyTip = guest.allergy ? `\nAllergy: ${guest.allergy}` : "";
+      seat.title = `${guest.firstName} ${guest.lastName}${allergyTip}\nClick to unassign`;
     }
   }
 
@@ -196,8 +199,8 @@ function buildTableSeats(): void {
         leftContainer.appendChild(createSeatElement(table.id, i));
       }
 
-      // Set table height based on seat count
-      const height = perSide * 40 + 4;
+      // Set table height based on seat count (34px seat + 2px gap)
+      const height = perSide * 36 + 4;
       el.style.height = `${height}px`;
     }
   }
@@ -218,8 +221,10 @@ function renderGuestList(): void {
   for (const guest of unassigned) {
     const item = document.createElement("div");
     item.className = "guest-item";
+    if (guest.allergy) item.classList.add("has-allergy");
     item.draggable = true;
     item.textContent = `${guest.firstName} ${guest.lastName}`;
+    if (guest.allergy) item.title = `Allergy: ${guest.allergy}`;
     item.dataset.guestId = guest.id;
 
     item.addEventListener("dragstart", (e) => {
@@ -266,16 +271,18 @@ function importNames(): void {
     const line = lines[i].trim();
     if (!line) continue;
 
-    // Split by tab (Google Sheets copy) or multiple spaces
+    // Split by tab (Google Sheets copy)
     const parts = line.split(/\t/);
     if (parts.length >= 2) {
       const firstName = parts[0].trim();
       const lastName = parts[1].trim();
+      const allergy = (parts[2] || "").trim();
       if (firstName || lastName) {
         state.guests.push({
           id: generateId(),
           firstName,
           lastName,
+          allergy,
         });
       }
     } else {
@@ -286,6 +293,7 @@ function importNames(): void {
           id: generateId(),
           firstName,
           lastName: "",
+          allergy: "",
         });
       }
     }
@@ -299,7 +307,7 @@ function importNames(): void {
 // ── Export ──
 
 function exportToClipboard(): void {
-  const lines: string[] = ["Table\tSeat\tFirst Name\tLast Name"];
+  const lines: string[] = ["Table\tSeat\tFirst Name\tLast Name\tAllergy"];
 
   // Sort by table then seat number
   const sorted = [...state.assignments].sort((a, b) => {
@@ -313,7 +321,7 @@ function exportToClipboard(): void {
     const tableConfig = TABLES.find((t) => t.id === assignment.tableId);
     const tableName = tableConfig?.label ?? assignment.tableId;
     lines.push(
-      `${tableName}\t${assignment.seatNumber}\t${guest.firstName}\t${guest.lastName}`
+      `${tableName}\t${assignment.seatNumber}\t${guest.firstName}\t${guest.lastName}\t${guest.allergy}`
     );
   }
 
