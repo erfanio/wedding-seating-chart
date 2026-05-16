@@ -108,6 +108,48 @@ body {
   opacity: 0.4;
 }
 
+#swap-section label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+}
+
+#swap-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+#swap-controls select {
+  flex: 1;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+#swap-controls span {
+  color: #888;
+  font-size: 16px;
+}
+
+#swap-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  background: #7c6fb0;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#swap-btn:hover {
+  background: #6b5fa0;
+}
+
 #sidebar-actions {
   display: flex;
   gap: 8px;

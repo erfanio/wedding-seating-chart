@@ -276,6 +276,7 @@ function renderGuestList(): void {
 function render(): void {
   buildTableSeats();
   renderGuestList();
+  populateSwapDropdowns();
 }
 
 // ── Import names ──
@@ -404,6 +405,59 @@ function exportToClipboard(): void {
   });
 }
 
+// ── Swap tables ──
+
+function populateSwapDropdowns(): void {
+  const selA = document.getElementById("swap-a") as HTMLSelectElement;
+  const selB = document.getElementById("swap-b") as HTMLSelectElement;
+  const valA = selA.value;
+  const valB = selB.value;
+
+  selA.innerHTML = "";
+  selB.innerHTML = "";
+  for (const t of TABLES) {
+    selA.appendChild(new Option(t.label, t.id));
+    selB.appendChild(new Option(t.label, t.id));
+  }
+  selA.value = valA || TABLES[0].id;
+  selB.value = valB || (TABLES[1]?.id ?? TABLES[0].id);
+}
+
+function swapTables(): void {
+  const selA = document.getElementById("swap-a") as HTMLSelectElement;
+  const selB = document.getElementById("swap-b") as HTMLSelectElement;
+  const idA = selA.value;
+  const idB = selB.value;
+  if (idA === idB) return;
+
+  // Collect assignments for both tables
+  const assignmentsA = state.assignments.filter((a) => a.tableId === idA);
+  const assignmentsB = state.assignments.filter((a) => a.tableId === idB);
+
+  // Remove both tables' assignments
+  state.assignments = state.assignments.filter((a) => a.tableId !== idA && a.tableId !== idB);
+
+  const tableA = TABLES.find((t) => t.id === idA)!;
+  const tableB = TABLES.find((t) => t.id === idB)!;
+
+  // Move A's guests to B (keep seat number if it fits)
+  for (const a of assignmentsA) {
+    if (a.seatNumber <= tableB.seats) {
+      state.assignments.push({ tableId: idB, seatNumber: a.seatNumber, guestId: a.guestId });
+    }
+  }
+
+  // Move B's guests to A (keep seat number if it fits)
+  for (const a of assignmentsB) {
+    if (a.seatNumber <= tableA.seats) {
+      state.assignments.push({ tableId: idA, seatNumber: a.seatNumber, guestId: a.guestId });
+    }
+  }
+
+  saveState();
+  render();
+}
+
 // ── Clear all ──
 
 function clearAll(): void {
@@ -421,6 +475,7 @@ function init(): void {
   document.getElementById("import-btn")!.addEventListener("click", importNames);
   document.getElementById("export-btn")!.addEventListener("click", exportToClipboard);
   document.getElementById("clear-btn")!.addEventListener("click", clearAll);
+  document.getElementById("swap-btn")!.addEventListener("click", swapTables);
 
   render();
 }
