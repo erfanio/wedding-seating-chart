@@ -69,9 +69,18 @@ function createSeatElement(tableId, seatNumber) {
             seat.className = "seat assigned";
             if (guest.allergy)
                 seat.classList.add("has-allergy");
+            seat.draggable = true;
             seat.textContent = `${guest.firstName} ${guest.lastName.charAt(0)}.`;
             const allergyTip = guest.allergy ? `\nAllergy: ${guest.allergy}` : "";
-            seat.title = `${guest.firstName} ${guest.lastName}${allergyTip}\nClick to unassign`;
+            seat.title = `${guest.firstName} ${guest.lastName}${allergyTip}\nDrag to move · Click to unassign`;
+            seat.addEventListener("dragstart", (e) => {
+                e.dataTransfer.setData("text/plain", guest.id);
+                e.dataTransfer.effectAllowed = "move";
+                seat.classList.add("dragging");
+            });
+            seat.addEventListener("dragend", () => {
+                seat.classList.remove("dragging");
+            });
         }
     }
     // Drop target
@@ -87,7 +96,20 @@ function createSeatElement(tableId, seatNumber) {
         seat.classList.remove("drag-over");
         const guestId = e.dataTransfer?.getData("text/plain");
         if (guestId) {
-            assignGuest(tableId, seatNumber, guestId);
+            // Capture state before any mutation
+            const existingGuestId = getAssignment(tableId, seatNumber)?.guestId;
+            const draggedFrom = getGuestAssignment(guestId);
+            const fromTableId = draggedFrom?.tableId;
+            const fromSeat = draggedFrom?.seatNumber;
+            // Remove both assignments
+            state.assignments = state.assignments.filter((a) => a.guestId !== guestId && !(a.tableId === tableId && a.seatNumber === seatNumber));
+            // Place dragged guest in this seat
+            state.assignments.push({ tableId, seatNumber, guestId });
+            // Swap: put displaced guest in the seat the dragged guest came from
+            if (existingGuestId && existingGuestId !== guestId && fromTableId && fromSeat !== undefined) {
+                state.assignments.push({ tableId: fromTableId, seatNumber: fromSeat, guestId: existingGuestId });
+            }
+            saveState();
             render();
         }
     });
@@ -277,6 +299,10 @@ function exportToClipboard() {
         const tableConfig = TABLES.find((t) => t.id === assignment.tableId);
         const tableName = tableConfig?.label ?? assignment.tableId;
         lines.push(`${tableName}\t${assignment.seatNumber}\t${guest.firstName}\t${guest.lastName}\t${guest.allergy}`);
+    }
+    // Unassigned guests with empty table/seat
+    for (const guest of getUnassignedGuests()) {
+        lines.push(`\t\t${guest.firstName}\t${guest.lastName}\t${guest.allergy}`);
     }
     navigator.clipboard.writeText(lines.join("\n")).then(() => {
         const btn = document.getElementById("export-btn");
