@@ -32,7 +32,7 @@ const TABLES: TableConfig[] = [
   { id: "table-2", label: "Table 2", seats: 10, type: "horizontal" },
   { id: "table-3", label: "Table 3", seats: 16, type: "vertical" },
   { id: "table-4", label: "Table 4", seats: 14, type: "vertical" },
-  { id: "table-5", label: "Table 5", seats: 14, type: "vertical" },
+  { id: "table-5", label: "Table 5", seats: 16, type: "vertical" },
   { id: "table-6", label: "Table 6", seats: 16, type: "vertical" },
 ];
 
